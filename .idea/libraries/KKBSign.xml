@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="KKBSign">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/KKBSign.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
