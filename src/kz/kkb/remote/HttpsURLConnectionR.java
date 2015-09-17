@@ -11,6 +11,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.KeyManagementException;
@@ -34,7 +35,7 @@ public class HttpsURLConnectionR {
             return true;
         }
     };
-    // Отправка через SSL
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ SSL
     public static String Send_https(String urlStr, String resp, String contType)
             throws CertificateException, InterruptedException, UnrecoverableKeyException, NoSuchAlgorithmException,
             IOException, KeyManagementException, KeyStoreException
@@ -82,8 +83,8 @@ public class HttpsURLConnectionR {
         javax.net.ssl.TrustManager[] trustAllCerts =             new javax.net.ssl.TrustManager[1];
         javax.net.ssl.TrustManager tm = new miTM();
         trustAllCerts[0] = tm;
-        javax.net.ssl.SSLContext sc =            javax.net.ssl.SSLContext.getInstance("SSL");
-        sc.init(null, trustAllCerts, null);
+        javax.net.ssl.SSLContext sc =            javax.net.ssl.SSLContext.getInstance("TLS");
+        sc.init(null, trustAllCerts, new java.security.SecureRandom());
         javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
     }
     public static class miTM implements javax.net.ssl.TrustManager, javax.net.ssl.X509TrustManager {
@@ -120,11 +121,72 @@ public class HttpsURLConnectionR {
 
     public static void main(String[] args) {
 
+        testTls();
+
         HttpsURLConnectionR http = new HttpsURLConnectionR();
         System.out.println("Testing 1 - Send Http GET request");
                     http.sendGet("100000", "10501444.00", "150519122832", "122832", "complete");
 
     }
+
+
+    public static String testTls(){
+        String rez="";
+        String urlS = "https://www.dvb.de";
+
+        /*
+        System.setProperty("http.proxyHost", "172.22.223.247");
+        System.setProperty("http.proxyPort", "8080");
+*/
+        try {
+            trustAllHttpsCertificates();
+        } catch (Exception e1) {
+            return "trustAllHttpsCertificates() Excep="+e1.getMessage();
+        }
+        String s3 = null;
+        URL url = null;
+        try {
+            url = new URL(urlS);
+            try {
+
+
+
+                HttpsURLConnection con = (HttpsURLConnection)url.openConnection();
+                con.setDoOutput(true);
+                con.setDoInput(true);
+                con.setHostnameVerifier(DO_NOT_VERIFY);
+                con.setRequestMethod("POST");
+
+                con.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+                DataOutputStream dataoutputstream = new DataOutputStream(con.getOutputStream());
+
+                String resp="";
+                dataoutputstream.writeBytes(resp);
+                dataoutputstream.flush();
+                dataoutputstream.close();
+                InputStream inputstream = con.getInputStream();
+                s3 = ReadMsg(inputstream);
+                inputstream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+
+
+            /*
+            con.setHostnameVerifier(DO_NOT_VERIFY);
+            con.setRequestMethod("POST");
+            int responseCode = con.getResponseCode();
+            System.out.println("\nSending 'GET' request to URL : " + url);
+            System.out.println("Response Code : " + responseCode);
+*/
+        return rez;
+    };
 
 
     // HTTP GET request 2
@@ -139,6 +201,7 @@ public class HttpsURLConnectionR {
         System.setProperty("http.proxyPort", "8443");
 */
 
+        //System.setProperty("https.protocols","TLSv1.2");
         String sCommandText ="";
         KKBSign test=new KKBSign();
         //HttpURLConnection con =null;
@@ -189,7 +252,7 @@ public class HttpsURLConnectionR {
             url=url+sCommandText;
             System.out.println("url="+url);
             String response=null;
-            String s3=Send_https(url,response,"");
+            String s3=Send_https(url,response,"application/x-www-form-urlencoded");
 
 
             /* 160915
