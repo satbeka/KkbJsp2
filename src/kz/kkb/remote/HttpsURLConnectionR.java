@@ -83,7 +83,7 @@ public class HttpsURLConnectionR {
         javax.net.ssl.TrustManager[] trustAllCerts =             new javax.net.ssl.TrustManager[1];
         javax.net.ssl.TrustManager tm = new miTM();
         trustAllCerts[0] = tm;
-        javax.net.ssl.SSLContext sc =            javax.net.ssl.SSLContext.getInstance("TLS");
+        javax.net.ssl.SSLContext sc =            javax.net.ssl.SSLContext.getInstance("TLSv1.2");
         sc.init(null, trustAllCerts, new java.security.SecureRandom());
         javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
     }
