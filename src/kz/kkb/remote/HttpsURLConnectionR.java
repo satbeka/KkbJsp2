@@ -35,8 +35,9 @@ public class HttpsURLConnectionR {
             return true;
         }
     };
+
     // �������� ����� SSL
-    public static String Send_https(String urlStr, String resp, String contType)
+    public static String Send_https(String urlStr, String contType)
             throws CertificateException, InterruptedException, UnrecoverableKeyException, NoSuchAlgorithmException,
             IOException, KeyManagementException, KeyStoreException
     {
@@ -67,9 +68,30 @@ public class HttpsURLConnectionR {
             if (contType.length()!=0)
                 con.setRequestProperty("content-type", contType);
             DataOutputStream dataoutputstream = new DataOutputStream(con.getOutputStream());
+         System.out.println(" DataOutputStream dataoutputstream = new DataOutputStream(con.getOutputStream()); ");
+
+            String resp="";
+       System.out.println("dataoutputstream.toString()="+dataoutputstream.toString());
             dataoutputstream.writeBytes(resp);
+        System.out.println(" dataoutputstream.writeBytes(resp)= "+resp);
+
             dataoutputstream.flush();
             dataoutputstream.close();
+
+            /*
+            int responseCode=con.getResponseCode();
+            if (responseCode == HttpsURLConnection.HTTP_OK) {
+                String line;
+                String response3="";
+                BufferedReader br=new BufferedReader(new InputStreamReader(con.getInputStream()));
+                while ((line=br.readLine()) != null) {
+              System.out.println("line="+line);
+                    response3+=line;
+                }
+            }
+
+*/
+
             InputStream inputstream = con.getInputStream();
             s3 = ReadMsg(inputstream);
             inputstream.close();
@@ -83,7 +105,7 @@ public class HttpsURLConnectionR {
         javax.net.ssl.TrustManager[] trustAllCerts =             new javax.net.ssl.TrustManager[1];
         javax.net.ssl.TrustManager tm = new miTM();
         trustAllCerts[0] = tm;
-        javax.net.ssl.SSLContext sc =            javax.net.ssl.SSLContext.getInstance("TLSv1.2");
+        javax.net.ssl.SSLContext sc =            javax.net.ssl.SSLContext.getInstance("TLSV1.2");
         sc.init(null, trustAllCerts, new java.security.SecureRandom());
         javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
     }
@@ -110,7 +132,7 @@ public class HttpsURLConnectionR {
     {
         BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(inputstream));
         StringBuffer stringbuffer = new StringBuffer();
-        String s;
+        String s="";
         while((s = bufferedreader.readLine()) != null)
             stringbuffer.append(s);
         bufferedreader.close();
@@ -251,8 +273,8 @@ public class HttpsURLConnectionR {
             sCommandText= URLEncoder.encode(Document) ;
             url=url+sCommandText;
             System.out.println("url="+url);
-            String response=null;
-            String s3=Send_https(url,response,"application/x-www-form-urlencoded");
+
+            String response=Send_https(url,"application/x-www-form-urlencoded");
 
 
             /* 160915
