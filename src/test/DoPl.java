@@ -36,7 +36,7 @@ public class DoPl {
             KKBSign ksig = new KKBSign();
             String textXml = eBank.asXML();
             String textSign = ((Element) confXml.getRootElement().selectSingleNode("//bank_sign")).getText();
-            String ks = "C:\\bv\\kkb\\test.jks";
+            String ks = "C:\\bv\\kkb_pl\\cert_new.jks";
             textSign = textSign.replaceAll(" ", "+");
             String res = ksig.verify(textXml, textSign, ks, "kkbca", "nissan") + "";
             System.out.println("res==" + res); //our client!
@@ -269,7 +269,22 @@ public class DoPl {
 
     public static void main(String[] args) {
 
-        DoPl.doPl();
+        String textSign=
+                "RYahJMWD fzymHBKZJp20g 3KGYeXYXZ6a9NoLnwUvS4mTf08A1CyVULTncR0SO981iIEY6V3Y87ls2whwOBO7dit8DAfTd hZ6M0JozTdfvKek5dDcEnKElTe81dlYQPkVIw1a1yJSISmzgRD2K0i6F4UbsOpyXukYG7nyDDFM=";
+
+        KKBSign ksig = new KKBSign();
+ksig.debug=true;
+        //ksig.setSignalgorythm("RSA");
+        String textXml = "<bank name=\"Kazkommertsbank JSC\"><customer name=\"gfhgghgf\" mail=\"sabdikalikov@tisr.kz\" phone=\"\"><merchant cert_id=\"00c183d70b\" name=\"null\"><order order_id=\"8543450\" amount=\"3\" currency=\"398\"><department merchant_id=\"92061103\" amount=\"3\" abonent_id=\"IIN451128300081BIN940740000694\"/></order></merchant><merchant_sign type=\"RSA\"/></customer><customer_sign type=\"RSA\"/><results timestamp=\"2015-12-25 17:28:51\"><payment merchant_id=\"92061103\" card=\"440564-XX-XXXX-6150\" amount=\"3\" reference=\"151225172851\" approval_code=\"172851\" response_code=\"00\" Secure=\"Yes\" card_bin=\"KAZ\" c_hash=\"13988BBF7C6649F799F36A4808490A3E\"/></results></bank>";
+        String ks = "C:\\bv\\kkb_pl\\cert_new.jks";
+        textSign = textSign.replaceAll(" ", "+");
+        //String res = ksig.verify(textXml, textSign, ks, "kkbca", "nissan") + "";
+        String res = ksig.verify(textXml, textSign, ks, "kkbca", "1q2w3e4r") + "";
+        System.out.println("res==" + res); //our client!
+        System.out.println("res.indexOf(true)=" + res.indexOf("true"));
+
+
+        //DoPl.doPl();
 
     }
 

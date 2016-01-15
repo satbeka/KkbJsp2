@@ -22,8 +22,8 @@ import java.security.cert.CertificateException;
 
 public class HttpsURLConnectionR {
 
-    final String merchantId="92061101";
-    final String certId="00C182B189";
+    final String merchantId="92061103";
+    final String certId="00c183d70b";
     /*certificate=	"00C182B189"
     merchant_id=	"92061101"
 */
@@ -94,6 +94,7 @@ public class HttpsURLConnectionR {
 
             InputStream inputstream = con.getInputStream();
             s3 = ReadMsg(inputstream);
+            System.out.println("s3.toString()="+s3.toString());
             inputstream.close();
         }catch(Exception exception ) {
             s3=exception+"";
@@ -210,6 +211,15 @@ public class HttpsURLConnectionR {
         return rez;
     };
 
+    private String respKKB="";
+
+    public String getRespKKB() {
+        return respKKB;
+    }
+
+    public void setRespKKB(String respKKB) {
+        this.respKKB = respKKB;
+    }
 
     // HTTP GET request 2
     public String sendGet(String orderId, String amount,String reference,String approval_code, String commandType ) {
@@ -250,16 +260,17 @@ public class HttpsURLConnectionR {
             System.out.println("merchantElem: "+ sCommandText +"<p>");
 
             String ks=System.getProperty("user.dir")+"\\src\\kz\\kkb\\remote\\sign_resources\\test.jks" ;
-            ks = "C:\\bv\\kkb\\test.jks";
+            ks = "C:\\bv\\kkb_pl\\cert_new.jks";
 
             //textSign=textSign.replaceAll(" ", "+");
             //String ks= "D:\\tisr job\\kkb\\MERCHANT\\kkbsign_java\\test.jks" ;
             String keystore=ks;
             String alias="cert";
-            String keypass="patrol";
-            String storepass="nissan";
+            String keypass="1q2w3e4r";
+            String storepass="1q2w3e4r";
 
-            String Base64Content=test.sign64(sCommandText,keystore,alias,"patrol","nissan");
+            String Base64Content=test.sign64(sCommandText, keystore, alias, "1q2w3e4r", "1q2w3e4r");
+            System.out.println("Base64Content="+Base64Content);
             Element merchant_signElem=Root.addElement("merchant_sign");
             merchant_signElem.addAttribute("type",  "RSA");
             merchant_signElem.addAttribute("cert_id",  certId);
@@ -307,11 +318,18 @@ public class HttpsURLConnectionR {
 
             //print result
             System.out.println("resp=="+response.toString());
-            rez="1";
+            respKKB=response;
+            if (response.contains("response code=\"00\"")){
+                rez="1";
+                return rez;
+            }
+
             return rez;
         }
         catch(Exception e){
             System.out.println(" catch httpsURL Unable to create file:" + e.getMessage());
+            respKKB=" catch httpsURL Unable to create file:" + e.getMessage();
+
 //    TODO update tTISR_CLIENT_KKB_1C_LOG apprv kkb reason
             /*
             if (con != null) {

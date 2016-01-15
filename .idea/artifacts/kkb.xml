@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
-  <artifact type="exploded-war" name="KkbJsp2:war exploded">
-    <output-path>$PROJECT_DIR$/out/artifacts/KkbJsp2_war_exploded</output-path>
-    <root id="root">
+  <artifact type="war" name="kkb">
+    <output-path>$PROJECT_DIR$/out/artifacts/kkb</output-path>
+    <root id="archive" name="kkb.war">
       <element id="javaee-facet-resources" facet="KkbJsp2/web/Web" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
@@ -15,9 +15,10 @@
           <element id="file-copy" path="D:/oracle/product/11.2.0/client_1/jdbc/lib/ojdbc6.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/lib/dom4j-1.4.jar" />
           <element id="library" level="project" name="ojdbc6-11.2.0.2.0" />
-          <element id="library" level="project" name="KKBSign" />
           <element id="file-copy" path="$PROJECT_DIR$/lib/servlet-4.0.6.jar" />
           <element id="library" level="project" name="jstl-1.2" />
+          <element id="library" level="project" name="KKBSign" />
+          <element id="library" level="project" name="lib" />
         </element>
       </element>
     </root>

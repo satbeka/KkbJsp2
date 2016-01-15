@@ -1,7 +1,9 @@
 package kz.tisr.controller;
 
 import comp.KKBSign;
+import comp.KKBSign;
 import kz.kkb.remote.HttpsURLConnectionR;
+import kz.kkb.remote.Lib;
 import oracle.sql.CLOB;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -123,10 +125,13 @@ public class FrontServlet extends HttpServlet {
 
             KKBSign ksig = new KKBSign();
             String textXml = eBank.asXML();
+            System.out.println("textXml="+textXml);
             String textSign = ((Element) confXml.getRootElement().selectSingleNode("//bank_sign")).getText();
-            String ks = "C:\\bv\\kkb\\test.jks";
+            System.out.println("textSign="+textSign);
+            String ks = "C:\\bv\\kkb_pl\\cert_new.jks";
             textSign = textSign.replaceAll(" ", "+");
-            String res = ksig.verify(textXml, textSign, ks, "kkbca", "nissan") + "";
+            //String res = ksig.verify(textXml, textSign, ks, "kkbca", "nissan") + "";
+            String res = ksig.verify(textXml, textSign, ks, "kkbca", "1q2w3e4r") + "";
             System.out.println("res==" + res); //our client!
             System.out.println("res.indexOf(true)=" + res.indexOf("true"));
              if (res.indexOf("true") == 0) {
@@ -207,21 +212,37 @@ public class FrontServlet extends HttpServlet {
                     pS.executeUpdate();
                     System.out.println(" 1  pS.executeUpdate().......");
                     conn.commit();
+                    conn.close();
+
+                    conn=null;
+                    conn = DriverManager.getConnection(URL, USER, PASS);
+                    System.out.println(" 1 rl="+rl);
+                    System.out.println(" 1 orderID=" + orderID);
+                    String ORDER_N_ERCB=Lib.checkSS(orderID, conn);
+
+                    System.out.println(" 1 1 1 ORDER_N_ERCB="+ORDER_N_ERCB);
+                    if (ORDER_N_ERCB==null){
+                       request.setAttribute("res", "1");
+                       return;
+                    }
+
+                    System.out.println(" 1 upd continue ORDER_N_ERCB="+rl);
 
                     Connection conn2 = null;
                     String insSQL2 = "update TISR_CLIENT_KKB_1C_LOG \n" +
                             "set " +
                             "RES_1C=? ,\n" +
                             "APPROVE_KKB=?  ,\n" +
-                            "ERR_APPROVE_KKB=?  \n" +
+                            "ERR_APPROVE_KKB=?  ,\n" +
+                            "ORDER_N_ERCB=?  \n" +
 
-                            "where ORDER_N_ERCB='" + rl + "'";
+                            "where ORDER_ID_KKB='" + orderID + "'";
                     PreparedStatement pS2 = null;
 
 
                     try {
                         conn2 = DriverManager.getConnection(URL, USER, PASS);
-                        pS2 = conn.prepareStatement(insSQL2);
+                        pS2 = conn2.prepareStatement(insSQL2);
 
                         System.out.println("conn2");
 
@@ -238,8 +259,12 @@ public class FrontServlet extends HttpServlet {
                                     String commandType = "complete";
                                     HttpsURLConnectionR httpsURLConnectionR = new HttpsURLConnectionR();
                                     resAPPROVE_KKB = httpsURLConnectionR.sendGet(orderID, amount, reference, approval_code, commandType);
+                                    String responseApproveKKB=httpsURLConnectionR.getRespKKB();
                                     pS2.setString(2, resAPPROVE_KKB);
-                                    pS2.setString(3, "");
+                                    pS2.setString(3, responseApproveKKB);
+                                pS2.setString(4, ORDER_N_ERCB);
+
+                                System.out.println(" pS2.setString(4,ORDER_N_ERCB="+ORDER_N_ERCB);
                                     //
 
                                 System.out.println("insSQL2=====" + insSQL2);
@@ -252,6 +277,9 @@ public class FrontServlet extends HttpServlet {
                                 pS2.setString(1, res1C);
                                 pS2.setString(2, resAPPROVE_KKB);
                                 pS2.setString(3, e.toString());
+                                pS2.setString(4, ORDER_N_ERCB);
+                                System.out.println(" catch (Exception e) pS2.setString(4,ORDER_N_ERCB=" + ORDER_N_ERCB);
+                                pS2.executeUpdate();
                                 conn2.commit();
 
                             }
@@ -345,6 +373,9 @@ public class FrontServlet extends HttpServlet {
 
 
              }//if
+
+            request.setAttribute("res", "1");
+            System.out.println("  request.setAttribute(res, 1);");
 
             }catch(Exception e){ //0
                 System.out.println("catch0  e.toString()=====" + e.toString());
